@@ -1,0 +1,14 @@
+dist: xenial
+language: minimal
+addons:
+  apt:
+    packages:
+    - qemu
+cache:
+  directories:
+    - vendor
+env:
+  global:
+    - PACKER_VERSION="1.4.0"
+script:
+  - sudo ./build.bash
