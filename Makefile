@@ -4,4 +4,4 @@ build:
 
 .PHONY: clean
 clean:
-	@rm -f "*.box"
+	@rm -f *.box
