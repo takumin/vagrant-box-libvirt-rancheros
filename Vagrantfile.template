@@ -1,6 +1,7 @@
 
 #
 # Origin: https://github.com/rancher/os-vagrant
+# License: http://www.apache.org/licenses/LICENSE-2.0
 #
 
 require 'ipaddr'
