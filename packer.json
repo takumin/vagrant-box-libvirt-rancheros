@@ -32,7 +32,7 @@
   "provisioners": [
     {
       "type":"shell",
-      "script": "./install.bash"
+      "script": "./packer-install.bash"
     }
   ],
   "post-processors": [
