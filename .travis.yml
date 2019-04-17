@@ -10,5 +10,6 @@ cache:
 env:
   global:
     - PACKER_VERSION="1.4.0"
+    - PACKER_CACHE_DIR="vendor"
 script:
   - sudo ./build.bash
