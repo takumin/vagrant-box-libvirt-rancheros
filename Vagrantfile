@@ -14,24 +14,26 @@ Vagrant.configure('2') do |config|
   # Disabled Default Sync
   config.vm.synced_folder '.', '/vagrant', disabled: true
 
-  # Libvirt Provider Configuration
+  # Libvirt Provider
   config.vm.provider :libvirt do |libvirt|
-    # Memory
+    # Memory Size
     libvirt.memory = 1024
-    # Monitor
+    # Random Number Generator
+    libvirt.random :model => 'random'
+    # Graphic Monitor
     libvirt.graphics_type = 'spice'
     libvirt.graphics_ip = '127.0.0.1'
     libvirt.video_type = 'qxl'
-    # Network
+    # Management Network
     libvirt.management_network_mode = 'nat'
     libvirt.management_network_guest_ipv6 = 'no'
   end
 
   # RancherOS Server
   config.vm.define :rancheros do |domain|
-    # Libvirt Provider Configuration
+    # Libvirt Provider
     domain.vm.provider :libvirt do |libvirt|
-      # Monitor
+      # Spice Listen Port
       libvirt.graphics_port = 5950
     end
   end
