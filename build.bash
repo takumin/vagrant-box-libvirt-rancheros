@@ -22,7 +22,7 @@ fi
 
 # Download Packer Archive
 if [ ! -f "${VENDOR_DIR}/packer_${PACKER_VERSION}_linux_amd64.zip" ]; then
-	wget -O "${VENDOR_DIR}/packer_${PACKER_VERSION}_linux_amd64.zip" \
+	wget -qO "${VENDOR_DIR}/packer_${PACKER_VERSION}_linux_amd64.zip" \
 		"https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip"
 fi
 
