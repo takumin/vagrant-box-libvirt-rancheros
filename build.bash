@@ -51,5 +51,8 @@ if ! type packer > /dev/null 2>&1; then
 	PACKER_CMD="${VENDOR_DIR}/packer"
 fi
 
-# Build Vagrant Box
-"${PACKER_CMD}" build "${CURRENT_DIR}/packer.json"
+# Validate Packer
+PACKER_CACHE_DIR="${VENDOR_DIR}" "${PACKER_CMD}" validate "${CURRENT_DIR}/packer.json"
+
+# Build Packer
+PACKER_CACHE_DIR="${VENDOR_DIR}" "${PACKER_CMD}" build "${CURRENT_DIR}/packer.json"

@@ -1,7 +1,8 @@
 {
   "variables": {
     "rancheros_version": "1.5.1",
-    "rancheros_iso_sha256sum": "3ea664b520fd7f75caf80533f2eb9e03a320499f240a7cd32a25a030175cc15b"
+    "rancheros_iso_sha256sum": "3ea664b520fd7f75caf80533f2eb9e03a320499f240a7cd32a25a030175cc15b",
+    "vagrant_cloud_token": "{{env `VAGRANT_CLOUD_TOKEN`}}"
   },
   "builders": [
     {
@@ -32,15 +33,28 @@
   "provisioners": [
     {
       "type":"shell",
-      "script": "./packer-install.bash"
+      "script": "./scripts/install.sh"
     }
   ],
   "post-processors": [
     {
       "type": "vagrant",
       "compression_level": 9,
-      "vagrantfile_template": "./Vagrantfile.template",
+      "vagrantfile_template": "./templates/Vagrantfile.template",
       "output": "vagrant-box-libvirt-rancheros-{{user `rancheros_version`}}.box"
+    },
+    {
+      "type": "shell-local",
+      "environment_vars": [
+        "RANCHEROS_VERSION={{user `rancheros_version`}}",
+        "VAGRANT_CLOUD_TOKEN={{user `vagrant_cloud_token`}}"
+      ],
+      "scripts": [
+        "./scripts/upload.rb"
+      ],
+      "execute_command": [
+        "/bin/sh", "-c", "{{.Vars}} /usr/bin/ruby {{.Script}}"
+      ]
     }
   ]
 }

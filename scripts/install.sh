@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/bin/sh
+# vim: set noet :
+
+set -eu
 
 cat > vagrant.yml <<__EOF__
 #cloud-config
