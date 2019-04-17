@@ -1,12 +1,13 @@
 {
   "variables": {
-    "rancheros_version": "1.5.1"
+    "rancheros_version": "1.5.1",
+    "rancheros_iso_sha256sum": "3ea664b520fd7f75caf80533f2eb9e03a320499f240a7cd32a25a030175cc15b"
   },
   "builders": [
     {
       "type": "qemu",
       "iso_url": "https://releases.rancher.com/os/v{{user `rancheros_version`}}/rancheros.iso",
-      "iso_checksum": "3ea664b520fd7f75caf80533f2eb9e03a320499f240a7cd32a25a030175cc15b",
+      "iso_checksum": "{{user `rancheros_iso_sha256sum`}}",
       "iso_checksum_type": "sha256",
       "output_directory": "packer_output",
       "shutdown_command": "echo 'rancher' | sudo -S shutdown -P now",
