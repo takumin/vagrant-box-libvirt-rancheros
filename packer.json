@@ -37,6 +37,7 @@
   "post-processors": [
     {
       "type": "vagrant",
+      "compression_level": 9,
       "vagrantfile_template": "./Vagrantfile.template",
       "output": "vagrant-box-libvirt-rancheros-{{user `rancheros_version`}}.box"
     }
