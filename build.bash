@@ -3,8 +3,11 @@
 
 set -eu
 
+# Current Directory
+CURRENT_DIR="$(cd "$(dirname "$0")"; pwd)"
+
 # Vendor Directory
-VENDOR_DIR="$(cd "$(dirname "$0")"; pwd)/vendor"
+VENDOR_DIR="${CURRENT_DIR}/vendor"
 
 # Check Packer Version
 if [ -z "${PACKER_VERSION}" ]; then
@@ -32,3 +35,6 @@ fi
 if [ ! -x "${VENDOR_DIR}/packer" ]; then
 	chmod +x "${VENDOR_DIR}/packer"
 fi
+
+# Build Vagrant Box
+"${CURRENT_DIR}/vendor/packer" build "${CURRENT_DIR}/packer.json"
