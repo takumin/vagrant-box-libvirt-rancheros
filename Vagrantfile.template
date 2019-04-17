@@ -1,0 +1,8 @@
+Vagrant.configure('2') do |config|
+  config.ssh.username = 'rancher'
+  config.vm.provider :libvirt do |libvirt|
+    libvirt.disk_bus = 'virtio'
+    libvirt.disk_device = 'vda'
+    libvirt.nic_model_type = 'virtio'
+  end
+end
