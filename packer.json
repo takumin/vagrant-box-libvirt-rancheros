@@ -2,6 +2,8 @@
   "variables": {
     "rancheros_version": "1.5.1",
     "rancheros_iso_sha256sum": "3ea664b520fd7f75caf80533f2eb9e03a320499f240a7cd32a25a030175cc15b",
+    "vagrant_cloud_user": "takumin",
+    "vagrant_cloud_repo": "rancheros",
     "vagrant_cloud_token": "{{env `VAGRANT_CLOUD_TOKEN`}}"
   },
   "builders": [
@@ -46,8 +48,11 @@
     {
       "type": "shell-local",
       "environment_vars": [
-        "RANCHEROS_VERSION={{user `rancheros_version`}}",
-        "VAGRANT_CLOUD_TOKEN={{user `vagrant_cloud_token`}}"
+        "VAGRANT_CLOUD_USER={{user `vagrant_cloud_user`}}",
+        "VAGRANT_CLOUD_REPO={{user `vagrant_cloud_repo`}}",
+        "VAGRANT_CLOUD_TOKEN={{user `vagrant_cloud_token`}}",
+        "VAGRANT_BOX_VERSION={{user `rancheros_version`}}",
+        "VAGRANT_BOX_PROVIDER=libvirt"
       ],
       "scripts": [
         "./scripts/upload.rb"
