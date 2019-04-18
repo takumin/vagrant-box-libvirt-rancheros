@@ -21,6 +21,7 @@ direnv:
 			echo 'export VAGRANT_CLOUD_TOKEN=""'; \
 			echo 'export VAGRANT_BOX_PROVIDER="libvirt"'; \
 			echo 'export VAGRANT_BOX_VERSION=""'; \
+			echo 'export VAGRANT_BOX_FILENAME="vagrant-box-$${VAGRANT_BOX_PROVIDER}-rancheros-$${VAGRANT_BOX_VERSION}.box"'; \
 		} > "$(CURDIR)/.envrc"; \
 	fi
 	@direnv allow
