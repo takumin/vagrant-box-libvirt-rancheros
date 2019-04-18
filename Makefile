@@ -1,6 +1,6 @@
 .PHONY: build
 build:
-	@bash -c "$(CURDIR)/build.bash"
+	@bash -c "$(CURDIR)/scripts/build.bash"
 
 .PHONY: clean
 clean:

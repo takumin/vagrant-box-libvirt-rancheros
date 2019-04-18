@@ -4,10 +4,10 @@
 set -eu
 
 # Current Directory
-CURRENT_DIR="$(cd "$(dirname "$0")"; pwd)"
+PARENT_DIR="$(cd "$(dirname "$0")";cd ..; pwd)"
 
 # Vendor Directory
-VENDOR_DIR="${CURRENT_DIR}/vendor"
+VENDOR_DIR="${PARENT_DIR}/vendor"
 
 # Packer Command
 PACKER_CMD="packer"
@@ -52,7 +52,7 @@ if ! type packer > /dev/null 2>&1; then
 fi
 
 # Validate Packer
-PACKER_CACHE_DIR="${VENDOR_DIR}" "${PACKER_CMD}" validate "${CURRENT_DIR}/packer.json"
+PACKER_CACHE_DIR="${VENDOR_DIR}" "${PACKER_CMD}" validate "${PARENT_DIR}/packer.json"
 
 # Build Packer
-PACKER_CACHE_DIR="${VENDOR_DIR}" "${PACKER_CMD}" build "${CURRENT_DIR}/packer.json"
+PACKER_CACHE_DIR="${VENDOR_DIR}" "${PACKER_CMD}" build "${PARENT_DIR}/packer.json"
