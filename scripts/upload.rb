@@ -3,7 +3,44 @@
 require 'net/https'
 require 'json'
 require 'uri'
-require 'pp'
+
+class Integer
+  def to_filesize
+    {
+      'B'   => 1024,
+      'KiB' => 1024 * 1024,
+      'MiB' => 1024 * 1024 * 1024,
+      'GiB' => 1024 * 1024 * 1024 * 1024,
+      'TiB' => 1024 * 1024 * 1024 * 1024 * 1024
+    }.each_pair { |e, s| return "#{(self.to_f / (s / 1024)).round(2)}#{e}" if self < s }
+  end
+end
+
+class Net::HTTP::Upload
+  attr_reader :size
+
+  def initialize(req, &block)
+    @req = req
+    @callback = block
+    @size = 0
+    if req.body_stream
+      @io = req.body_stream
+      req.body_stream = self
+    else
+      raise NotImplementedError
+    end
+  end
+
+  def readpartial(maxlen, outbuf)
+    begin
+      str = @io.readpartial(maxlen, outbuf)
+    ensure
+      @callback.call(self) unless @size.zero?
+    end
+    @size += str.length
+    str
+  end
+end
 
 unless ENV['VAGRANT_CLOUD_USER']
   raise ArgumentError, 'Require Environment Variable: VAGRANT_CLOUD_USER'
@@ -68,9 +105,11 @@ https.start do
   # Create Box
   res = https.post("/api/v1/boxes", {
     'box' => {
-      'username'   => username,
-      'name'       => repository,
-      'is_private' => false,
+      'username'          => username,
+      'name'              => repository,
+      'short_description' => repository,
+      'description'       => repository,
+      'is_private'        => false,
     },
   }.to_json, header)
 
@@ -85,7 +124,8 @@ https.start do
   # Create Version
   res = https.post("/api/v1/box/#{username}/#{repository}/versions", {
     'version' => {
-      'version' => version,
+      'version'     => version,
+      'description' => "#{repository} #{version}",
     },
   }.to_json, header)
 
@@ -119,7 +159,6 @@ https.start do
   case res
   when Net::HTTPSuccess
     puts "Get Upload Uri"
-  else
   end
 
   # Upload Uri
@@ -142,18 +181,17 @@ https.use_ssl = true
 https.ca_path = '/etc/ssl/certs'
 https.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
-https.start do
-  req = Net::HTTP::Post.new(upload.path)
-
-  File.open(filename) do |file|
-    req.body_stream = file
-
-    # req['Content-Length'] = file.lstat.size.to_s
-    req['Transfer-Encoding'] = 'chunked'
-
-    res = https.request(req)
+File.open(filename) do |file|
+  req = Net::HTTP::Put.new(upload.path)
+  req.content_length = file.size
+  req.body_stream = file
+  Net::HTTP::Upload.new(req) do |upload|
+    printf("Upload: %9s / %9s\n", upload.size.to_i.to_filesize, file.size.to_filesize)
   end
+  res = https.request(req)
 
-  # Close Connection
-  https.finish
+  case res
+  when Net::HTTPSuccess
+    puts "Success Upload"
+  end
 end

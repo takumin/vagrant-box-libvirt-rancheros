@@ -1,9 +1,10 @@
 .PHONY: build
-build:
+build: clean
 	@bash -c "$(CURDIR)/scripts/build.bash"
 
 .PHONY: clean
 clean:
+	@rm -fr packer_output
 	@rm -f *.box
 
 .PHONY: distclean
