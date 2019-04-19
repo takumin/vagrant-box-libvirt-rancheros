@@ -90,8 +90,8 @@ repository  = ENV['VAGRANT_CLOUD_REPO']
 boxname     = ENV['VAGRANT_BOX_NAME']
 short       = ENV['VAGRANT_BOX_SHORT']
 description = ENV['VAGRANT_BOX_DESCRIPTION']
-timestamp   = Time.now.to_i
-buildtime   = Time.now
+timestamp   = "#{Time.now.to_i}"
+buildtime   = "#{Time.now}"
 version     = ENV['VAGRANT_BOX_VERSION']
 release     = "#{version}.#{timestamp}"
 provider    = ENV['VAGRANT_BOX_PROVIDER']
@@ -121,6 +121,24 @@ https.ca_path = '/etc/ssl/certs'
 https.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
 https.start do
+  # Check Status
+  res = https.get("/api/v1/authenticate", header)
+
+  # Logger
+  case res
+  when Net::HTTPSuccess
+    puts "Success Authentication: #{username}"
+  when Net::HTTPUnauthorized
+    puts "Failed Unauthorized: #{username}"
+    exit 1
+  when Net::HTTPTooManyRequests
+    puts "Failed Too Many Requests: #{username}"
+    puts "Mac Connection: #{res['X-RateLimit-Limit']}"
+    puts "Remain Request: #{res['X-RateLimit-Remaining']}"
+    puts "Reset Date:     #{Time.at(res['X-RateLimit-Reset'])}"
+    exit 1
+  end
+
   # Create Box
   res = https.post("/api/v1/boxes", {
     'box' => {
