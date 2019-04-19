@@ -24,12 +24,12 @@
       "accelerator": "kvm",
       "ssh_username": "rancher",
       "ssh_password": "rancher",
-      "ssh_timeout": "3m",
+      "ssh_timeout": "5m",
       "vm_name": "rancher",
       "memory": 1024,
       "net_device": "virtio-net",
       "disk_interface": "virtio",
-      "boot_wait": "30s",
+      "boot_wait": "60s",
       "boot_command": [
         "sudo -i<enter><wait>",
         "echo rancher:rancher | chpasswd<enter><wait>"
