@@ -1,5 +1,10 @@
 # vim: set ft=ruby :
 
+require 'json'
+
+# Parse Packer Config
+json = JSON.load(File.read(File.join(__dir__, 'packer.json')))
+
 # Require Minimum Vagrant Version
 Vagrant.require_version '>= 2.2.4'
 
@@ -9,7 +14,7 @@ Vagrant.configure('2') do |config|
   config.vagrant.plugins = ['vagrant-libvirt']
 
   # RancherOS Box
-  config.vm.box = 'rancheros'
+  config.vm.box = "file://./vagrant-box-libvirt-rancheros-#{json['variables']['rancheros_version']}.box"
 
   # Disabled Default Sync
   config.vm.synced_folder '.', '/vagrant', disabled: true
