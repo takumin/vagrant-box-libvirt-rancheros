@@ -5,6 +5,11 @@
     "vagrant_cloud_user": "takumin",
     "vagrant_cloud_repo": "rancheros",
     "vagrant_cloud_token": "{{env `VAGRANT_CLOUD_TOKEN`}}",
+    "vagrant_box_name": "RancherOS",
+    "vagrant_box_short": "RancherOS: Docker Container Management Tools",
+    "vagrant_box_description": "Source: [Github](https://github.com/takumin/vagrant-box-libvirt-rancheros)",
+    "vagrant_box_timestamp": "{{timestamp}}",
+    "vagrant_box_build": "{{isotime \"2006/01/02 03:04:05 -0700\"}}",
     "vagrant_box_provider": "libvirt"
   },
   "builders": [
@@ -52,8 +57,13 @@
         "VAGRANT_CLOUD_USER={{user `vagrant_cloud_user`}}",
         "VAGRANT_CLOUD_REPO={{user `vagrant_cloud_repo`}}",
         "VAGRANT_CLOUD_TOKEN={{user `vagrant_cloud_token`}}",
-        "VAGRANT_BOX_PROVIDER={{user `vagrant_box_provider`}}",
+        "VAGRANT_BOX_NAME={{user `vagrant_box_name`}}",
+        "VAGRANT_BOX_SHORT={{user `vagrant_box_short`}}",
+        "VAGRANT_BOX_DESCRIPTION={{user `vagrant_box_description`}}",
+        "VAGRANT_BOX_TIMESTAMP={{user `vagrant_box_timestamp`}}",
+        "VAGRANT_BOX_BUILD={{user `vagrant_box_build`}}",
         "VAGRANT_BOX_VERSION={{user `rancheros_version`}}",
+        "VAGRANT_BOX_PROVIDER={{user `vagrant_box_provider`}}",
         "VAGRANT_BOX_FILENAME=vagrant-box-{{user `vagrant_box_provider`}}-rancheros-{{user `rancheros_version`}}.box"
       ],
       "scripts": [

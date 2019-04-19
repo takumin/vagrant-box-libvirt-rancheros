@@ -54,12 +54,32 @@ unless ENV['VAGRANT_CLOUD_TOKEN']
   raise ArgumentError, 'Require Environment Variable: VAGRANT_CLOUD_TOKEN'
 end
 
-unless ENV['VAGRANT_BOX_PROVIDER']
-  raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_PROVIDER'
+unless ENV['VAGRANT_BOX_NAME']
+  raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_NAME'
+end
+
+unless ENV['VAGRANT_BOX_SHORT']
+  raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_SHORT'
+end
+
+unless ENV['VAGRANT_BOX_DESCRIPTION']
+  raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_DESCRIPTION'
+end
+
+unless ENV['VAGRANT_BOX_TIMESTAMP']
+  raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_TIMESTAMP'
+end
+
+unless ENV['VAGRANT_BOX_BUILD']
+  raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_BUILD'
 end
 
 unless ENV['VAGRANT_BOX_VERSION']
   raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_VERSION'
+end
+
+unless ENV['VAGRANT_BOX_PROVIDER']
+  raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_PROVIDER'
 end
 
 unless ENV['VAGRANT_BOX_FILENAME']
@@ -72,11 +92,17 @@ else
   proxy = URI::Generic.new(nil, nil, nil, nil, nil, nil, nil, nil, nil)
 end
 
-username   = ENV['VAGRANT_CLOUD_USER']
-repository = ENV['VAGRANT_CLOUD_REPO']
-provider   = ENV['VAGRANT_BOX_PROVIDER']
-version    = ENV['VAGRANT_BOX_VERSION']
-filename   = ENV['VAGRANT_BOX_FILENAME']
+username    = ENV['VAGRANT_CLOUD_USER']
+repository  = ENV['VAGRANT_CLOUD_REPO']
+boxname     = ENV['VAGRANT_BOX_NAME']
+short       = ENV['VAGRANT_BOX_SHORT']
+description = ENV['VAGRANT_BOX_DESCRIPTION']
+timestamp   = ENV['VAGRANT_BOX_TIMESTAMP']
+buildtime   = ENV['VAGRANT_BOX_BUILD']
+version     = ENV['VAGRANT_BOX_VERSION']
+release     = "#{version}.#{timestamp}"
+provider    = ENV['VAGRANT_BOX_PROVIDER']
+filename    = ENV['VAGRANT_BOX_FILENAME']
 
 upload = URI::Generic.new(nil, nil, nil, nil, nil, nil, nil, nil, nil)
 
@@ -107,8 +133,8 @@ https.start do
     'box' => {
       'username'          => username,
       'name'              => repository,
-      'short_description' => repository,
-      'description'       => repository,
+      'short_description' => short,
+      'description'       => description,
       'is_private'        => false,
     },
   }.to_json, header)
@@ -116,29 +142,29 @@ https.start do
   # Logger
   case res
   when Net::HTTPSuccess
-    puts "Create Box"
+    puts "Create Box: #{username}/#{repository}"
   when Net::HTTPUnprocessableEntity
-    puts "Exists Box"
+    puts "Exists Box: #{username}/#{repository}"
   end
 
   # Create Version
   res = https.post("/api/v1/box/#{username}/#{repository}/versions", {
     'version' => {
-      'version'     => version,
-      'description' => "#{repository} #{version}",
+      'version'     => release,
+      'description' => "- #{boxname}\n- Version #{version}\n- Build #{buildtime}\n- #{description}",
     },
   }.to_json, header)
 
   # Logger
   case res
   when Net::HTTPSuccess
-    puts "Create Version"
+    puts "Create Version: #{release}"
   when Net::HTTPUnprocessableEntity
-    puts "Exists Version"
+    puts "Exists Version: #{release}"
   end
 
   # Create Provider
-  res = https.post("/api/v1/box/#{username}/#{repository}/version/#{version}/providers", {
+  res = https.post("/api/v1/box/#{username}/#{repository}/version/#{release}/providers", {
     'provider' => {
       'name' => provider,
     },
@@ -147,18 +173,18 @@ https.start do
   # Logger
   case res
   when Net::HTTPSuccess
-    puts "Create Provider"
+    puts "Create Provider: #{provider}"
   when Net::HTTPUnprocessableEntity
-    puts "Exists Provider"
+    puts "Exists Provider: #{provider}"
   end
 
   # Get Upload URL
-  res = https.get("/api/v1/box/#{username}/#{repository}/version/#{version}/provider/#{provider}/upload", header)
+  res = https.get("/api/v1/box/#{username}/#{repository}/version/#{release}/provider/#{provider}/upload", header)
 
   # Logger
   case res
   when Net::HTTPSuccess
-    puts "Get Upload Uri"
+    puts "Get Upload Url: #{username}/#{repository}/#{release}/#{provider}"
   end
 
   # Upload Uri
@@ -192,6 +218,33 @@ File.open(filename) do |file|
 
   case res
   when Net::HTTPSuccess
-    puts "Success Upload"
+    puts "Success Upload: #{username}/#{repository}/#{release}/#{provider}"
   end
+end
+
+https = Net::HTTP.new(
+  endpoint.host,
+  endpoint.port,
+  proxy.host,
+  proxy.port,
+  proxy.user,
+  proxy.password
+)
+
+https.use_ssl = true
+https.ca_path = '/etc/ssl/certs'
+https.verify_mode = OpenSSL::SSL::VERIFY_PEER
+
+https.start do
+  # Create Provider
+  res = https.put("/api/v1/box/#{username}/#{repository}/version/#{release}/release", nil, header)
+
+  # Logger
+  case res
+  when Net::HTTPSuccess
+    puts "Success Release: #{username}/#{repository}/#{release}/#{provider}"
+  end
+
+  # Close Connection
+  https.finish
 end
