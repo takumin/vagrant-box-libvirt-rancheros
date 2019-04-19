@@ -5,6 +5,9 @@ require 'json'
 # Parse Packer Config
 json = JSON.load(File.read(File.join(__dir__, 'packer.json')))
 
+# Vagrant Box Version
+version = json['variables']['rancheros_version']
+
 # Require Minimum Vagrant Version
 Vagrant.require_version '>= 2.2.4'
 
@@ -14,7 +17,8 @@ Vagrant.configure('2') do |config|
   config.vagrant.plugins = ['vagrant-libvirt']
 
   # RancherOS Box
-  config.vm.box = "file://./vagrant-box-libvirt-rancheros-#{json['variables']['rancheros_version']}.box"
+  config.vm.box = 'takumin/rancheros'
+  config.vm.box_url = "file://./vagrant-box-libvirt-rancheros-#{version}.box"
 
   # Disabled Default Sync
   config.vm.synced_folder '.', '/vagrant', disabled: true
