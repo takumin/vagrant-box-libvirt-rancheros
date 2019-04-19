@@ -3,6 +3,7 @@
 require 'net/https'
 require 'json'
 require 'uri'
+require 'date'
 
 class Integer
   def to_filesize
@@ -66,14 +67,6 @@ unless ENV['VAGRANT_BOX_DESCRIPTION']
   raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_DESCRIPTION'
 end
 
-unless ENV['VAGRANT_BOX_TIMESTAMP']
-  raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_TIMESTAMP'
-end
-
-unless ENV['VAGRANT_BOX_BUILD']
-  raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_BUILD'
-end
-
 unless ENV['VAGRANT_BOX_VERSION']
   raise ArgumentError, 'Require Environment Variable: VAGRANT_BOX_VERSION'
 end
@@ -97,8 +90,8 @@ repository  = ENV['VAGRANT_CLOUD_REPO']
 boxname     = ENV['VAGRANT_BOX_NAME']
 short       = ENV['VAGRANT_BOX_SHORT']
 description = ENV['VAGRANT_BOX_DESCRIPTION']
-timestamp   = ENV['VAGRANT_BOX_TIMESTAMP']
-buildtime   = ENV['VAGRANT_BOX_BUILD']
+timestamp   = Time.now.to_i
+buildtime   = Time.now
 version     = ENV['VAGRANT_BOX_VERSION']
 release     = "#{version}.#{timestamp}"
 provider    = ENV['VAGRANT_BOX_PROVIDER']
